@@ -34,9 +34,10 @@ mkdir build && cd build
 
 ## Usage
 
-Here is a simple demonstration, running on a four core (eight thread) MacBook laptop. Note that you enable pigz by having defining "AFNI_COMPRESSOR=PIGZ" in your environment. In this example the single-threaded CloudFlare zlib is more than four times faster than the default single-threaded zlib in saving data. The parallel CloudFlare+pigz is more than 100 times faster. While this demonstrates the benefit, the magnitude of these benefits is atypical: the sample dataset has had air outside the brain set to zero to allow a small Github repository. Typically, CloudFlare doubles performance, while pigz provides an almost linear increase with the number of threads.
+Here is a simple demonstration, running on a four core (eight thread) MacBook laptop. Note that you enable pigz by defining "AFNI_COMPRESSOR=PIGZ" in your environment. In this example the single-threaded CloudFlare zlib is more than four times faster than the default single-threaded zlib in saving data. The parallel CloudFlare+pigz is more than 100 times faster. While this demonstrates the benefit, the magnitude of these benefits is atypical: the sample dataset has had air outside the brain set to zero to allow a small Github repository. Typically, CloudFlare doubles performance, while pigz provides an almost linear increase with the number of threads.
 
 ```
+>make
 >./clib_01_read_write -input test4D.nii.gz -output single.nii.gz
 read time: 268 ms
 write time: 4017 ms
