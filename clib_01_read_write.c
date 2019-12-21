@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include <nifti1_io.h>
+#include <time.h>
 
 int show_help( void )
 {
@@ -28,6 +29,12 @@ int show_help( void )
       "                 -verb LEVEL     : the verbose level to LEVEL\n"
       "\n");
    return 0;
+}
+
+long timediff(clock_t t1, clock_t t2) {
+    long elapsed;
+    elapsed = ((double)t2 - t1) / CLOCKS_PER_SEC * 1000;
+    return elapsed;
 }
 
 int main(int argc, char * argv[])
@@ -74,19 +81,22 @@ int main(int argc, char * argv[])
    if( !fout ) { fprintf(stderr, "** missing option '-output'\n"); return 1; }
 
    /* read input dataset, including data */
+   clock_t startTime = clock();
    nim = nifti_image_read(fin, 1);
    if( !nim ) {
       fprintf(stderr,"** failed to read NIfTI image from '%s'\n", fin);
       return 2;
    }
+   printf("read time: %ld ms\n", timediff(startTime, clock()));
 
    /* assign nifti_image fname/iname pair, based on output filename
       (request to 'check' image and 'set_byte_order' here) */
    if( nifti_set_filenames(nim, fout, 1, 1) ) return 1;
 
    /* if we get here, write the output dataset */
+   startTime = clock();
    nifti_image_write( nim );
-
+   printf("write time: %ld ms\n", timediff(startTime, clock()));
    /* and clean up memory */
    nifti_image_free( nim );
 
