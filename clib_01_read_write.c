@@ -6,6 +6,8 @@
  * gcc -o clib_01_read_write clib_01_read_write.c       \
  *     -I../include -L../lib -lniftiio -lznz -lz -lm
  *
+ *  clib_01_read_write -input test4D.nii.gz -output parallel.nii.gz
+ *
  * R Reynolds   14 Apr 2009
  *----------------------------------------------------------------------
  */

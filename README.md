@@ -32,9 +32,15 @@ cd pigz
 mkdir build && cd build
 ```
 
+Compiling on Windows is a bit more involved. The repository includes the CloudFlare zlib compiled for Windows MSVC Compiler 19. If you have a different compiler, you can use dcm2niix build script to build the zlib again. The compilation is as follows:
+
+```
+cl -o clib_01_read_write clib_01_read_write.c  niftilib/nifti1_io.c znzlib/znzlib.c -I./niftilib -I./znzlib win/zlibd.lib -I./win -DHAVE_ZLIB
+```   
+
 ## Usage
 
-Here is a simple demonstration, running on a four core (eight thread) MacBook laptop. Note that you enable pigz by defining "AFNI_COMPRESSOR=PIGZ" in your environment. In this example the single-threaded CloudFlare zlib is more than four times faster than the default single-threaded zlib in saving data. The parallel CloudFlare+pigz is more than 100 times faster. While this demonstrates the benefit, the magnitude of these benefits is atypical: the sample dataset has had air outside the brain set to zero to allow a small Github repository. Typically, CloudFlare doubles performance, while pigz provides an almost linear increase with the number of threads.
+Here is a simple demonstration, running on a four core (eight thread, 28w) MacBook laptop. Note that you enable pigz by defining "AFNI_COMPRESSOR=PIGZ" in your environment. In this example the single-threaded CloudFlare zlib is more than four times faster than the default single-threaded zlib in saving data. The parallel CloudFlare+pigz is more than 100 times faster. While this demonstrates the benefit, the magnitude of these benefits is atypical: the sample dataset has had air outside the brain set to zero to allow a small Github repository. Typically, CloudFlare doubles performance, while pigz provides an almost linear increase with the number of threads.
 
 ```
 >make
@@ -52,6 +58,20 @@ gcc -O3 -lm  -I./darwin ./darwin/libz.a	 -o clib_01_read_write clib_01_read_writ
 read time: 273 ms
 write time: 907 ms
 ```
+
+Below is the same on a 4-Core (eight thread, 15w CPU) Windows laptop. Several people have compiled pigz for Windows, but you want to make sure you have version 2.34 or later (prior versions do not support piped file creation). You can get version 2.4 compiled for Windows [here](http://binaries.przemoc.net). Note that in this example pigz has not been compiled for CloudFlare, while the main executable has been.
+
+```
+>set AFNI_COMPRESSOR=PIGZ
+>clib_01_read_write -input test4D.nii.gz -output parallel.nii.gz
+read time: 796 ms
+write time: 828 ms
+>set AFNI_COMPRESSOR=GZ
+>clib_01_read_write -input test4D.nii.gz -output serial.nii.gz
+read time: 793 ms
+write time: 2825 ms 
+```
+
 
 ## License
 

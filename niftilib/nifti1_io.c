@@ -5704,10 +5704,13 @@ int doPigz(nifti_image *nim, struct nifti_1_header nhdr, const nifti_brick_list 
     strcat(command, " -n -f > \"");
     strcat(command, nim->fname);
     strcat(command, "\"");
-	if (( pigzPipe = popen(command, "w")) == NULL) {
-		//printf("Unable to open pigz pipe\n");
+	#ifdef _MSC_VER
+	if (( pigzPipe = _popen(command, "w")) == NULL)
 		return -1;
-	}
+	#else
+	if (( pigzPipe = popen(command, "w")) == NULL)
+		return -1;		
+	#endif
 	znzFile fp;
 	fp = (znzFile) calloc(1,sizeof(struct znzptr));
 	fp->zfptr = NULL;
@@ -5717,7 +5720,11 @@ int doPigz(nifti_image *nim, struct nifti_1_header nhdr, const nifti_brick_list 
 	if( nim->nifti_type != NIFTI_FTYPE_ANALYZE )
     nifti_write_extensions(fp,nim);
 	nifti_write_all_data(fp,nim,NBL);
-	pclose(pigzPipe);
+	#ifdef _MSC_VER
+	_pclose(pigzPipe);
+	#else
+	pclose(pigzPipe);		
+	#endif
 	free(fp);
 	return 0;		
 }
@@ -5803,7 +5810,7 @@ znzFile nifti_image_write_hdr_img2(nifti_image *nim, int write_opts,
       	value = getenv(key);
       	//export AFNI_COMPRESSOR=PIGZ
       	char   pigzKey[5] = "PIGZ";
-      	if (strstr(value,pigzKey)) {
+      	if ((value != NULL) && (strstr(value,pigzKey))) {
 			if (doPigz(nim, nhdr, NBL) == 0) //success writing with pigz
 				return NULL;
       	}   
